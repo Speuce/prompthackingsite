@@ -1,36 +1,30 @@
 import Link from "next/link";
+import SubmitArea from "~/components/main/submit";
+import { getServerAuthSession } from "~/server/auth";
 
-export default function HomePage() {
+export default async function HomePage() {
+  const user = await getServerAuthSession();
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#2e026d] to-[#15162c] text-white">
-      <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16 ">
-        <h1 className="text-5xl font-extrabold tracking-tight text-white sm:text-[5rem]">
-          Create <span className="text-[hsl(280,100%,70%)]">T3</span> App
-        </h1>
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-8">
-          <Link
-            className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20"
-            href="https://create.t3.gg/en/usage/first-steps"
-            target="_blank"
-          >
-            <h3 className="text-2xl font-bold">First Steps →</h3>
-            <div className="text-lg">
-              Just the basics - Everything you need to know to set up your
-              database and authentication.
-            </div>
-          </Link>
-          <Link
-            className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20"
-            href="https://create.t3.gg/en/introduction"
-            target="_blank"
-          >
-            <h3 className="text-2xl font-bold">Documentation →</h3>
-            <div className="text-lg">
-              Learn more about Create T3 App, the libraries it uses, and how to
-              deploy it.
-            </div>
-          </Link>
+    <main className="flex flex-col items-center text-slate-900 bg-slate-100 h-screen p-4">
+      <div className="flex flex-col">
+        {/* Header */}
+        <div className="flex w-full justify-center flex-row mb-8">
+          <h1 className="text-4xl font-semibold">PromptHacking</h1>
+          <div className="text-2xl font-normal text-orange-500 ml-24 mt-2">
+            { (!!user) ? (
+              <Link href="/api/auth/signout">
+                Sign Out
+              </Link> 
+            ) : (
+              <Link href="/api/auth/signin">
+                Sign In
+              </Link>
+            )}
+          </div>
         </div>
+
+        {/* Submit Area */}
+        { !!user && <SubmitArea session={user} /> }
       </div>
     </main>
   );

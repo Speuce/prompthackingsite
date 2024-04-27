@@ -71,6 +71,6 @@ model Prompt {
     downvotes Int      @default(0)
     score     Int      @default(0)
     pending   Boolean  @default(true)
-    gptfour   Boolean
+    gptfour   Boolean  @default(false)
     userId    String
 }

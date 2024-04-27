@@ -17,6 +17,24 @@ export default function SubmitArea(props: ISubmitProps) {
     const [isLoading, setIsLoading] = React.useState(false);
     const [success, setSuccess] = React.useState(false);
 
+    const submitPrompt = async () => {
+        const res = await fetch('/api/prompt/create', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                promptName,
+                prompt,
+                userEmail: props.session.user.email
+            })
+        });
+        if(res.ok){
+            setSuccess(true);
+            setIsOpen(false);
+        }
+    }
+
     return ((!isOpen) ? (
         <div className='flex flex-col'>
             { (success) && (<span className='text-slate-500'>Thanks for submitting your prompt!</span>)}
@@ -38,6 +56,7 @@ export default function SubmitArea(props: ISubmitProps) {
                     className='mt-4 bg-slate-800 text-slate-100 self-end w-20'
                     onClick={async () => {
                         setIsLoading(true);
+                        await submitPrompt();
                     }}
                 >
                     {(isLoading) ? (<Loader2 className={`inline-block animate-spin`} size={18} />) : "Submit"}

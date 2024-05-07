@@ -42,14 +42,15 @@ model Session {
 }
 
 model User {
-    id               String    @id @default(cuid())
+    id               String          @id @default(cuid())
     name             String?
-    email            String?   @unique
+    email            String?         @unique
     emailVerified    DateTime?
     image            String?
     accounts         Account[]
     sessions         Session[]
     submittedPrompts Prompt[]
+    comments         PromptComment[]
 }
 
 model VerificationToken {
@@ -61,16 +62,28 @@ model VerificationToken {
 }
 
 model Prompt {
+    id        String          @id @default(cuid())
+    createdAt DateTime        @default(now())
+    updatedAt DateTime        @updatedAt
+    name      String
+    prompt    String
+    author    User            @relation(fields: [userId], references: [id])
+    upvotes   Int             @default(0)
+    downvotes Int             @default(0)
+    score     Int             @default(0)
+    pending   Boolean         @default(true)
+    gptfour   Boolean         @default(false)
+    userId    String
+    comments  PromptComment[]
+}
+
+model PromptComment {
     id        String   @id @default(cuid())
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
-    name      String
-    prompt    String
+    comment   String
     author    User     @relation(fields: [userId], references: [id])
-    upvotes   Int      @default(0)
-    downvotes Int      @default(0)
-    score     Int      @default(0)
-    pending   Boolean  @default(true)
-    gptfour   Boolean  @default(false)
+    prompt    Prompt   @relation(fields: [promptId], references: [id])
+    promptId  String
     userId    String
 }

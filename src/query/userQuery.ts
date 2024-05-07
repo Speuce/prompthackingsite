@@ -8,3 +8,12 @@ export async function getUserByEmail(email: string){
         }
     });
 }
+
+export async function getUserById(id: string){
+    // Get user by id
+    return await db.user.findUnique({
+        where: {
+            id: id
+        }
+    });
+}

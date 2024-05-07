@@ -11,6 +11,12 @@ async function handleCreatePrompt(req: Request){
         if(!session || !user || user.email !== session.user.email){
             return new Response('Unauthorized', {status: 401});
         }
+        if(promptName.length < 1 || promptName.length > 100){
+            return new Response('Prompt name must be between 1 and 100 characters', {status: 400});
+        }
+        if(prompt.length < 1 || prompt.length > 10000){
+            return new Response('Prompt must be between 1 and 10000 characters', {status: 400});
+        }
         await createPendingPrompt(promptName, prompt, user);
         return Response.json({success: true});
     } else {

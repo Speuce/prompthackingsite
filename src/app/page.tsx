@@ -1,9 +1,12 @@
 import Link from "next/link";
+import { PromptsArea } from "~/components/main/prompts";
 import SubmitArea from "~/components/main/submit";
+import { getAllActivePrompts } from "~/query/promptQuery";
 import { getServerAuthSession } from "~/server/auth";
 
 export default async function HomePage() {
   const user = await getServerAuthSession();
+  const activePrompts = await getAllActivePrompts();
   return (
     <main className="flex flex-col items-center text-slate-900 bg-slate-100 h-screen p-4">
       <div className="flex flex-col">
@@ -25,6 +28,7 @@ export default async function HomePage() {
 
         {/* Submit Area */}
         { !!user && <SubmitArea session={user} /> }
+        <PromptsArea prompts={activePrompts} />
       </div>
     </main>
   );

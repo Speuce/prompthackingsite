@@ -8,7 +8,7 @@ export default async function HomePage() {
   const user = await getServerAuthSession();
   const activePrompts = await getAllActivePrompts();
   return (
-    <main className="flex flex-col items-center text-slate-900 bg-slate-100 h-screen p-4">
+    <div className="flex flex-col items-center text-slate-900 bg-slate-100 h-screen p-4">
       <div className="flex flex-col">
         {/* Header */}
         <div className="flex w-full justify-center flex-row mb-8">
@@ -28,8 +28,8 @@ export default async function HomePage() {
 
         {/* Submit Area */}
         { !!user && <SubmitArea session={user} /> }
-        <PromptsArea prompts={activePrompts} />
+        <PromptsArea prompts={activePrompts} userId={user?.user.id}/>
       </div>
-    </main>
+    </div>
   );
 }

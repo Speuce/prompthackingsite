@@ -51,6 +51,7 @@ model User {
     sessions         Session[]
     submittedPrompts Prompt[]
     comments         PromptComment[]
+    votes            PromptVote[]
 }
 
 model VerificationToken {
@@ -62,19 +63,32 @@ model VerificationToken {
 }
 
 model Prompt {
-    id        String          @id @default(cuid())
-    createdAt DateTime        @default(now())
-    updatedAt DateTime        @updatedAt
-    name      String
-    prompt    String
-    author    User            @relation(fields: [userId], references: [id])
-    upvotes   Int             @default(0)
-    downvotes Int             @default(0)
-    score     Int             @default(0)
-    pending   Boolean         @default(true)
-    gptfour   Boolean         @default(false)
+    id           String          @id @default(cuid())
+    createdAt    DateTime        @default(now())
+    updatedAt    DateTime        @updatedAt
+    name         String
+    prompt       String
+    author       User            @relation(fields: [userId], references: [id])
+    score        Int             @default(0)
+    pending      Boolean         @default(true)
+    gptfour      Boolean         @default(false)
+    userId       String
+    comments     PromptComment[]
+    votes        PromptVote[]
+    commentCount Int             @default(0)
+}
+
+model PromptVote {
+    id        String   @id @default(cuid())
+    vote      Boolean
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    author    User     @relation(fields: [userId], references: [id])
+    prompt    Prompt   @relation(fields: [promptId], references: [id])
+    promptId  String
     userId    String
-    comments  PromptComment[]
+
+    @@unique([userId, promptId], name: "promptId_userId")
 }
 
 model PromptComment {

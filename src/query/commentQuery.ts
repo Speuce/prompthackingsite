@@ -1,5 +1,6 @@
 import { db } from "~/server/db";
-import { type CommentWithUser } from "~/types/comment";
+import { type CommentWithUser } from "~/types/types";
+import { incrementPromptCommentCount } from "./promptQuery";
 
 export async function getCommentsForPrompt(promptId: string): Promise<CommentWithUser[]>{
     // Get comments for prompt
@@ -23,11 +24,18 @@ export async function getCommentsForPrompt(promptId: string): Promise<CommentWit
 
 export async function createPromptComment(promptId: string, userId: string, comment: string){
     // Create a comment for a prompt
-    return await db.promptComment.create({
+    // TODO put this in a transaction
+    const res = await db.promptComment.create({
         data: {
             promptId: promptId,
             userId: userId,
             comment: comment
         }
     });
+    if(!res){
+        throw new Error('Failed to create comment');
+    }
+    // update prompt comment count
+    await incrementPromptCommentCount(promptId);
+    return res;
 }

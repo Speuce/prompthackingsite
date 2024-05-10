@@ -4,14 +4,15 @@ import * as React from 'react';
 import { PromptBox } from '../promptbox';
 import { Dialog, DialogContent, DialogTitle } from '../ui/dialog';
 import { Button } from '../ui/button';
-import { ChevronUp, Copy, CopyCheck, SendHorizonal } from 'lucide-react';
+import { Copy, CopyCheck, SendHorizonal } from 'lucide-react';
 import { Separator } from '../ui/separator';
 import { Comments } from './comments';
 import { Textarea } from '../ui/textarea';
 import { useToast } from '../ui/use-toast';
+import { type PromptWithInfo } from '~/types/types';
 
 export interface IPromptsAreaProps {
-    prompts: Prompt[];
+    prompts: PromptWithInfo[];
     userId?: string | undefined;
 }
 
@@ -41,7 +42,7 @@ export function PromptsArea (props: IPromptsAreaProps) {
       body: JSON.stringify({comment: commentText, promptId: activePrompt.id})
     });
     if(res.ok){
-      // fetch comments again
+      // fetch prompts again
       setCommentRefreshState(commentRefreshState + 1);
     }else{
       // show error message
@@ -54,6 +55,30 @@ export function PromptsArea (props: IPromptsAreaProps) {
     setCommentLoading(false);
   }
 
+  const submitVote = async (promptId: string, vote: boolean) => {
+    if(!props.userId) return;
+    // make request to create vote
+    const res = await fetch('/api/prompt/vote', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({promptId, vote: vote})
+    });
+    if(res.ok){
+      // refresh whole page for now
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+      window.location.reload();
+    }else{
+      // show error message
+      toast({
+        title: 'Error',
+        description: 'Failed to vote',
+        variant: 'destructive'
+      })
+    }
+  }
+
   return (
     <>
       <div className='flex flex-col gap-4'>
@@ -61,9 +86,9 @@ export function PromptsArea (props: IPromptsAreaProps) {
               <PromptBox 
                 key={prompt.id} 
                 prompt={prompt}
-                openDetail={() => {setActivePrompt(prompt); setShowDetail(true); console.log('showdeetail')}}
-                upvote={() => {console.log('upvote request')}}
-                downvote={() => {console.log('downvote request')}}
+                openDetail={() => {setActivePrompt(prompt); setShowDetail(true)}}
+                changeVote={(promptId, vote) => { void submitVote(promptId, vote);}}
+                currentVote={prompt.votes ? prompt.votes[0] : undefined}
               >
               </PromptBox>
           ))}

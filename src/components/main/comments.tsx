@@ -6,7 +6,7 @@ import { Button } from '../ui/button';
 import { SendHorizonal } from 'lucide-react';
 import { useToast } from '../ui/use-toast';
 import { PromptComment } from '@prisma/client';
-import { type CommentWithUser } from '~/types/comment';
+import { type CommentWithUser } from '~/types/types';
 import { Spinner } from '../ui/Spinner';
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface

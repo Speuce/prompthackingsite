@@ -1,17 +1,18 @@
 "use client"
-import { type Prompt } from '@prisma/client';
+import { type PromptVote, type Prompt } from '@prisma/client';
 import { ChevronDown, ChevronUp, MessageCircle } from 'lucide-react';
 import * as React from 'react';
 import { Button } from './ui/button';
 
 export interface IPromptBoxProps {
     prompt: Prompt;
+    currentVote?: PromptVote | undefined;
     openDetail: () => void;
-    upvote: () => void;
-    downvote: () => void;
+    changeVote: (oromptId: string, value: boolean) => void;
 }
 
 export function PromptBox (props: IPromptBoxProps) {
+  const currentVote = props.currentVote?.vote;
   return (
     <div 
       className='border border-2 pt-4 pr-5 pl-4 rounded-xl flex flex-row hover:shadow-lg transition-all cursor-pointer' 
@@ -20,16 +21,26 @@ export function PromptBox (props: IPromptBoxProps) {
         <div className='flex flex-col items-center mr-2 text-slate-400'>
           <Button 
             size="icon" 
-            className='-mt-2 -mb-1 hover:text-slate-900'
-            onClick={(e) => {props.upvote(); e.stopPropagation();}}
+            className={`-mt-2 -mb-1 hover:text-slate-900 ${currentVote === true ? 'text-slate-900' : ''}`}
+            onClick={(e) => {
+              if(currentVote !== true){
+                props.changeVote(props.prompt.id, true);
+              }
+              e.stopPropagation();
+            }}
           >
             <ChevronUp size={24} className='pa-0'/>
           </Button>
-          <span>542</span>
+          <span>{ props.prompt.score }</span>
           <Button 
             size="icon" 
-            className="-mt-1 hover:text-slate-900"
-            onClick={(e) => {props.downvote(); e.stopPropagation();}}
+            className={`-mt-2 -mb-1 hover:text-slate-900 ${currentVote === false ? 'text-slate-900' : ''}`}
+            onClick={(e) => {
+              if(currentVote !== false){
+                props.changeVote(props.prompt.id, false);
+              }
+              e.stopPropagation();
+            }}
           >
             <ChevronDown size={24} />
           </Button>
@@ -43,7 +54,7 @@ export function PromptBox (props: IPromptBoxProps) {
             >
               <MessageCircle size={18} className='mr-1'/>
               <span>
-                542
+              {props.prompt.commentCount}
               </span> 
             </Button>
           </div>
